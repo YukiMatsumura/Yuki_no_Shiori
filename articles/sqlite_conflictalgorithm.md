@@ -1,10 +1,11 @@
 ---
 title: "SQLiteDatabase - コンフリクトアルゴリズム"
 emoji: "😸"
-type: "tech"
-topics: ["android", "sqlite"]
+type: "tech" # tech: 技術記事 / idea: アイデア
+topics: ["android"]
 published: true
 ---
+
 
 [SQLiteDatabase](file:///Users/yuki/Documents/android/android-sdk-macosx/docs/reference/android/database/sqlite/SQLiteDatabase.html#CONFLICT_ABORT)の`INSERT`/`UPDATE`文でコンフリクト対応する話.
 

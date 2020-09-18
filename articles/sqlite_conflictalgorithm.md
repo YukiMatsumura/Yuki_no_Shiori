@@ -6,7 +6,6 @@ topics: ["android"]
 published: true
 ---
 
-
 SQLiteDatabaseの`INSERT`/`UPDATE`文でコンフリクト対応する話. 
 
 ### はじめに

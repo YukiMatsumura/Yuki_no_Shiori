@@ -7,7 +7,7 @@ published: true
 ---
 
 
-[SQLiteDatabase](file:///Users/yuki/Documents/android/android-sdk-macosx/docs/reference/android/database/sqlite/SQLiteDatabase.html#CONFLICT_ABORT)の`INSERT`/`UPDATE`文でコンフリクト対応する話.
+SQLiteDatabaseの`INSERT`/`UPDATE`文でコンフリクト対応する話.
 
 ### はじめに
 

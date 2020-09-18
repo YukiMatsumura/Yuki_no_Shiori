@@ -17,8 +17,8 @@ Androidでもこれを使うことができる.
 `SQLiteDatabase`クラスを使って`INSERT` or `UPDATE`をする際にコンフリクトアルゴリズムを指定できるメソッドがAPI Lv.8から用意されている. 
 
  - [SQL As Understood By SQLite](https://www.sqlite.org/lang_conflict.html) 
- - [Android Developers - SQLiteDatabase.insertWithOnConflict](http://developer.android.com/intl/ja/reference/android/database/sqlite/SQLiteDatabase.html#insertWithOnConflict(java.lang.String, java.lang.String, android.content.ContentValues, int))
- - [Android Developers - SQLiteDatabase.updateWithOnConflict](http://developer.android.com/intl/ja/reference/android/database/sqlite/SQLiteDatabase.html#updateWithOnConflict(java.lang.String, android.content.ContentValues, java.lang.String, java.lang.String[], int))
+ - [Android Developers - SQLiteDatabase.insertWithOnConflict](https://developer.android.com/reference/android/database/sqlite/SQLiteDatabase.html?hl=ja)
+ - [Android Developers - SQLiteDatabase.updateWithOnConflict](https://developer.android.com/reference/android/database/sqlite/SQLiteDatabase.html?hl=ja)
 
 SQLiteにおけるコンフリクト要因としては`UNIQUE`, `NOT NULL`, `CHECK`, `PRIMARY KEY`といったカラム制約がある. ただし, `FOREIGN KEY`制約についてはこれが適用されない. 
 

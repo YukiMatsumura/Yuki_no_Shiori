@@ -1,0 +1,93 @@
+# non-SDK interfaces を veridex toolで検出する
+
+SDKに定義されていない非公開なインタフェース（non-SDK interface）であってもリフレクションを使うことでアプリから参照することができていましたが, Android 9（API Lv.28）以降は制限されるようになりました. 詳細は「[Improving Stability by Reducing Usage of non-SDK Interfaces](https://android-developers.googleblog.com/2018/02/improving-stability-by-reducing-usage.html)」を参照してください.
+この変更により, アプリはTarget SDKのバージョンを変更する際にはアプリや依存するライブラリがnon-SDK interfaceを使っていないかをチェックする必要があります.
+
+チェックする方法はいくつかありますが, 本稿ではveridex toolを使用する方法についてまとめます. 「[Android Developers - Restrictions on non-SDK interfaces
+](https://developer.android.com/guide/app-compatibility/restrictions-non-sdk-interfaces#test-veridex-tool)」にも方法が書かれてありますveridex toolsの制限など知りたい方はそちらを参照してください.
+
+## non-SDK interface使用箇所の検出
+
+今回はmacOSでveridex toolsを実行します.
+
+### veridex toolsの実行
+
+1. [git](https://android.googlesource.com/platform/prebuilts/runtime/+/refs/heads/master/appcompat/)から[appcompatのtar.gz](https://android.googlesource.com/platform/prebuilts/runtime/+archive/master/appcompat.tar.gz)をDLします. 
+2. tar.gzを展開すると `veridex-mac.zip` があるのでこれを展開します
+3. `appcompat.sh` があるのでこれを実行します
+
+```shell
+./appcompat.sh --dex-file=[APKファイルパス]
+```
+
+### 出力結果の確認
+
+`appcompat.sh`を実行すると下記のようなフォーマットで結果が出力されます.
+
+```txt
+#1: Linking unsupported Llibcore/io/Memory;->pokeByte(JB)V use(s):
+       Lcom/google/android/gms/internal/gtm/zztx$zzb;->zza(JB)V
+
+#2: Reflection max-target-p Landroid/widget/AutoCompleteTextView;->ensureImeVisible use(s):
+       Landroidx/appcompat/widget/SearchView$PreQAutoCompleteTextViewReflector;-><init>()V
+
+...
+
+83 hidden API(s) used: 28 linked against, 55 through reflection
+	70 in unsupported
+	0 in blocked
+	1 in max-target-o
+	12 in max-target-p
+	0 in max-target-q
+	0 in max-target-r
+```
+
+結果の見方は下図の通りです.
+
+
+
+
+#### non-SDK APIリストの種別
+
+non-SDK APIリストの種別で `unsupported` は現在, 特に使用制限はなく, アプリが使用できるnon-SDK interfaceです. 
+
+`max-target-p` はAndroid 9では制限されていなかったが, Android 10から制限されるようになったAPIです. Android 9では問題ありません. しかし, Android 10かつTarget SDKバージョン10のアプリはこのAPIを使うことができません. 同条件でこのAPIを呼び出すと実行時例外が発生します.
+
+
+#### 検出されたnon-SDK interface
+
+制限の対象となり得るnon-SDK interfaceです.
+
+#### non -SDK interfaceの使用元
+
+non-SDK interfaceをリフレクションを使って参照している参照元です.
+
+### 検出されたnon-SDK interfaceの参照元をチェック
+
+検出された参照元が自アプリのコードなら, 下記のようにSDKバージョンに応じて処理を分けるようにします.
+
+```java
+if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {...}
+```
+
+検出された参照元が3rd-partyライブラリのコードならそのコードを参照し, SDKバージョンに応じて処理を分けているか確認します.
+
+例えば, 下記のような出力結果が得られた場合,
+
+```txt
+#2: Reflection max-target-p Landroid/widget/AutoCompleteTextView;->ensureImeVisible use(s):
+       Landroidx/appcompat/widget/SearchView$PreQAutoCompleteTextViewReflector;-><init>()V
+```
+
+`androidx.appcompat.widget.SearchView$PreQAutoCompleteTextViewReflector` のコードを確認します.
+
+```java
+static final PreQAutoCompleteTextViewReflector PRE_API_29_HIDDEN_METHOD_INVOKER =
+        (Build.VERSION.SDK_INT < 29) ? new PreQAutoCompleteTextViewReflector() : null;
+```
+
+SDKバージョンが考慮されているので, この出力結果は問題ないことがわかります.
+
+もしライブラリ側に問題があった場合, ライブラリのバージョンを上げるか, コードオーナーに修正を依頼するなどして対応を待つ必要があります.
+
+以上です.

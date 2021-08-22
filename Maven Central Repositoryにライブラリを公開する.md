@@ -125,7 +125,7 @@ $ gpg --keyserver keyserver.ubuntu.com --send-keys <先ほど生成した8桁の
 署名する際に使う秘密鍵の情報をBase64エクスポートしてメモしておきます。
 
 ```bash
-$ gpg --export-secret-keys 5BEF072A | base64
+$ gpg --export-secret-keys 89ABCDEF | base64
 ```
 
 
